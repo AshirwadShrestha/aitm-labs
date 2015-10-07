@@ -4,16 +4,19 @@
 
 **Overview**
 
+The purpose of this lab is to give you a realistic, if brief overview of (reasonably) modern application development practices.
+
 Lab objectives:
 
-In this lab, you will work with basic application tools, as an individual developer.
-You will initialize a Vagrant machine that has been preconfigured as a simple developer workstation with:
+In this lab, you will work with basic application tools, as an individual developer. You will see test-driven development in action, in a very simple form, with automated build and deployment to a local Tomcat instance.
 
-* Java
-* JUnit
-* Ant
-* Tomcat
-* git
+You will start by initializing a Vagrant machine that has been preconfigured as a simple developer workstation with:
+
+* https://en.wikipedia.org/wiki/Java_(programming_language)[Java]
+* http://junit.org/[JUnit]
+* http://ant.apache.org/[Ant]
+* http://tomcat.apache.org/[Tomcat]
+* https://git-scm.com/[git]
 
 **Prerequisites**
 
@@ -63,7 +66,7 @@ Now, you will see a new Vagrantfile. Have a look at it:
 
     YourStudentID@serverXXX:~/Calavera$ more Vagrantfile
 
-(You can hit the space bar to go through it, or q to exit.)
+(File is lengthy. More only shows you one screen at a time. You can hit the space bar repeatedly to go through it, or q to exit.)
 
 There are a number of machines defined, such as
 
@@ -77,6 +80,12 @@ There are a number of machines defined, such as
 Each section like that defines how Vagrant should bring up a machine and configure it. There are a number of new commands we haven't seen before. Let's focus on the following:
 
 ....
+
+###############################################################################
+###################################    manos     ##############################
+###############################################################################
+
+
 #manos.vm.provision         :shell, path: "./shell/manos.sh"
 
  manos.vm.provision :chef_zero do |chef|
@@ -252,7 +261,8 @@ Look for the language "Fixed port collision" in a series like this. THE NUMBERS 
 
 MAKE NOTE OF THE PORT 8080 MAPPING. In the above, it says "Now on port 2203." You will have a DIFFERENT number. Write it down.
 
-If you miss your port, or can't find it, you will need to do:
+****
+ONLY *if you miss your port*, or can't find it, you will need to do:
 
  vboxmanage list vms
 
@@ -271,6 +281,7 @@ NIC 1 Rule(3):   name = tcp8134, protocol = tcp, host ip = , host port = XXXX, g
 ....
 
 Copy down the "XXXX."
+****
 
 Once you have your port 8080 mapping and the Vagrant launching process is complete, you can access your VM's web server. Manos comes preconfigured with a running Tomcat instance and a simple test-harness based Java application. You can see it running when you ssh into the VM:
 
@@ -304,10 +315,16 @@ IMPORTANT: Instead of typing 2203 for the port number, you should substitute the
 
 Finally, you can view it in a real browser over X windows.
 
+NOTE: You may not find much use for X-windows in the outside world, but it is helpful here as it prevents us from worrying about hardening the local Vagrant VMs.
+
 First, be sure you logged into the server with X enabled. You need to either:
 
 * Check the box in Putty // For people using xming 6.9 above, there will be enable x11 forwarding checkbox under ssh.
 * go "ssh -X YourStudentID@serverXXX" if you are using your Mac console
+
+NOTE: You do *not* need Firefox on your local laptop for this to work. You *do* need to have X11 forwarding working, with a local Xwindows display. For example, if XMing is installed, open XLaunch and click through the screens with the defaults. See also https://github.com/dm-academy/aitm-labs/blob/master/Lab-00/00-tech-lab.adoc[Lab 00], Configuring X-Windows. 
+
+Type "xclock" for a quick test. See https://github.com/dm-academy/aitm-labs/blob/master/Lab-00/00-tech-lab.adoc[Configuring X-Windows] in Lab 00.
 
 At the command line, go:
 ....
@@ -626,8 +643,7 @@ Now try:
 
 If you did it correctly, you should see that Tomcat (via curl) is now serving up the change you made. Many automated steps were executed between you making that change and it appearing in curl!
 
-NOTE: You can exit at this point from your VM to the main server, or just open a new session with X enabled, if you want to see this in firefox. Remember to use your specific mapped 8080 port number that Vagrant setup.
-
+NOTE: If you want to see this in firefox, just open a *new* ssh session to SEIS660 with X enabled and don't go into your VM. Remember to use your specific mapped 8080 port number that Vagrant setup.
 
 Let's add it to git:
 ....
@@ -855,10 +871,16 @@ Author: Charles Betz <char@calavera.biz>
     initial commit
 ....
 
-Find the git commit hash associated with your commit, and run the revert command:
+Notice in the above the line:
+
+ commit 3b810e4
+
+The string `3b810e4` is the commit hash. https://git-scm.com/book/en/v2/Getting-Started-Git-Basics[More on Git hashing & other topics.]
+
+Find the git commit hash associated with your commit by running `git log --pretty=short --abbrev-commit` as in the example above. Then, run the revert command:
 
 ....
-vagrant@manos:/home/hijo$ git revert 3b810e4
+vagrant@manos:/home/hijo$ git revert <hash>
 ....
 
 NOTE: You will need to edit the revert message in nano. Save and exit.
@@ -875,5 +897,11 @@ vagrant@manos:/home/hijo$ cat src/main/java/biz/calavera/MainServlet.java
 ....
 
 Rebuild with ant and check that the original functionality is restored. Use Curl again.
+
+Exit your VM and destroy it:
+
+ vagrant@manos:exit
+ YourStudentID@serverXXX:~/Calavera$ vagrant destroy manos -f
+
 
 Congratulations, you have finished another lab. Next up: an end to end DevOps pipeline.

@@ -1,4 +1,7 @@
+= Lab 04 (Business) Product management
 
-* http://www.paulglen.com/Downloads/105%20-%20Leading%20Geeks%20Tip%20Sheet.pdf
+* review http://www.aha.io/
+
+* consider impact mapping exercise
 
 * Review Amazon's https://aws.amazon.com/codepipeline/[AWS CodePipeline]
